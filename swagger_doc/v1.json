@@ -1,0 +1,66 @@
+{
+    "info": {
+    "title": "API title",
+    "version": "0.0.1"
+    },
+    "swagger": "2.0",
+    "produces": [
+    "application/xml",
+    "application/json",
+    "application/octet-stream",
+    "text/plain"
+    ],
+    "host": "localhost:3000",
+    "basePath": "/",
+    "tags": [
+    {
+    "name": "posts",
+    "description": "Operations about posts"
+    }
+    ],
+    "paths": {
+    "/api/v1/posts/{id}": {
+    "get": {
+    "description": "Return a posts",
+    "produces": [
+    "application/json"
+    ],
+    "parameters": [
+    {
+    "in": "path",
+    "name": "id",
+    "description": "ID of the post",
+    "type": "string",
+    "required": true
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "Return a posts"
+    }
+    },
+    "tags": [
+    "posts"
+    ],
+    "operationId": "getApiV1PostsId"
+    }
+    },
+    "/api/v1/posts": {
+    "get": {
+    "description": "Return all posts",
+    "produces": [
+    "application/json"
+    ],
+    "responses": {
+    "200": {
+    "description": "Return all posts"
+    }
+    },
+    "tags": [
+    "posts"
+    ],
+    "operationId": "getApiV1Posts"
+    }
+    }
+    }
+    }
