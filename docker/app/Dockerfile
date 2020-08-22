@@ -13,6 +13,7 @@ COPY yarn.lock ./
 RUN apt-get update && \
     apt-get install build-essential -y --no-install-recommends \
     vim \
+    git \
     gnupg2 \
     curl \
     wget \
@@ -27,11 +28,22 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     apt-get update && apt-get install yarn --no-install-recommends -y
 
+RUN apt-get install g++ \
+    qt5-default \
+    libqt5webkit5-dev \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-tools \
+    gstreamer1.0-x -y
+
+ENV BUNDLER_PATH=/bundle  BUNDLE_BIN=/bundle/bin GEM_HOME=/bundle
+
+ENV PATH="${BUNDLE_BIN}:${PATH}"
+
 ARG BUNDLER_VERSION=2.1.4
 
 RUN gem install bundler:${BUNDLER_VERSION}
 
-RUN bundle install
+RUN bundle install --path=${BUNDLER_PATH}
 
 RUN bundle exec rails db:prepare
 
