@@ -33,5 +33,6 @@ module RailsDocker
     config.generators.system_tests = nil
 
     config.hosts << ENV["HOST"]
+    config.hosts << "tiktok.com"
   end
 end

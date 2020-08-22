@@ -14,6 +14,9 @@ services:
       - 443:443
     env_file:
       - .env
+    environment:
+      - SELENIUM_HOST=${SELENIUM_HOST}
+      - SELENIUM_PORT=${SELENIUM_PORT}
 
   app:
     depends_on:
@@ -27,6 +30,7 @@ services:
       dockerfile: docker/app/Dockerfile
     volumes:
       - .:/app
+      - bundle_cache:/bundle
     command: sh /scripts/command.sh
     stdin_open: true
     tty: true
@@ -44,5 +48,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  selenium:
+    image: selenium/standalone-chrome-debug:latest
+    ports:
+      - 4444:4444
+      - 5900:5900
+
 volumes:
   mysql_data:
+  bundle_cache:
