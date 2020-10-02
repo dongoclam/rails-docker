@@ -18,42 +18,50 @@ jobs:
           MYSQL_ROOT_PASSWORD: $
     steps:
       - checkout
-      - restore_cache:
-          name: Restore bundle cache
-          keys:
-            - app-{{ checksum "Gemfile.lock" }}
+      # - restore_cache:
+      #     name: Restore bundle cache
+      #     keys:
+      #       - app-{{ checksum "Gemfile.lock" }}
 
-      - run: gem install bundler:2.1.4
+      # - run: gem install bundler:2.1.4
 
-      - run: bundle install --path vendor/bundle
+      # - run: bundle install --path vendor/bundle
 
-      - save_cache:
-          name: Save bundle cache
-          key: app-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
+      # - save_cache:
+      #     name: Save bundle cache
+      #     key: app-{{ checksum "Gemfile.lock" }}
+      #     paths:
+      #       - vendor/bundle
 
-      - run: dockerize -wait tcp://127.0.0.1:3306 -timeout 1m
+      # - run: dockerize -wait tcp://127.0.0.1:3306 -timeout 1m
 
-      - run: cp .env.example .env
+      # - run: cp .env.example .env
 
-      - run: bundle exec rails db:prepare
+      # - run: bundle exec rails db:prepare
 
-      - when:
-          condition: $CI_PULL_REQUEST
-          steps:
-            - run: echo $CI_PULL_REQUEST
-            - run: echo $CIRCLE_PULL_REQUEST
-            - slack/notify:
-                channel: localhost
-                color: '#42e2f4'
-                mentions: ''
-                message: This is a custom message notification
-                webhook: $SLACK_WEBHOOK
+      - run:
+          name: Finish when no pull request found
+          command: |
+            if [ -z $CIRCLE_PULL_REQUEST ]; then
+              circleci-agent step halt
+            fi
+        
+      - slack/notify:
+          color: $SLACK_COLOR
+          webhook: $SLACK_WEBHOOK
+          channel: $SLACK_CHANNEL
+          image_url: $SLACK_IMAGE
+          mentions: $SLACK_REVIEW_MEMBERS
+          include_project_field: false
+          include_job_number_field: false
+          include_visit_job_action: false
+          message: |
+            Pull request updated by \`$CIRCLE_USERNAME\` :star2:
+            *<$CIRCLE_PULL_REQUEST|#${CIRCLE_PULL_REQUEST##*/} $(git log --format=%B -n 1 $CIRCLE_SHA1)>*
+          footer: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME | << pipeline.git.branch >>
 
 workflows:
   version: 2
   build:
     jobs:
       - build
-  
